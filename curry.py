@@ -1,11 +1,12 @@
 from functools import wraps, partial
+from inspect import signature
 
 def curry(func):
     def f(*args, **kwargs):
         newfunc = partial(func, *args, **kwargs)
-        try:
+        if len(signature(newfunc).parameters) == 0:
             return newfunc()
-        except TypeError:
+        else:
             return newfunc
     return f
 
