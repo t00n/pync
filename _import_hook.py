@@ -10,6 +10,10 @@ def functionalize(src):
     red.insert(0, 'import pync')
     for func in red.find_all('def'):
         func.decorators.append('@pync.curry')
+
+    for l in red.find_all('list') + red.find_all('list_comprehension'):
+        exec('l.parent.%s = "pync.List(%s)"' % (l.on_attribute, l))
+
     return red.dumps()
 
 class PyncImporter(object):

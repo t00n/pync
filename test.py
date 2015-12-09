@@ -17,9 +17,9 @@ def test_curry():
         testfunc(1,1)(1,1)
 
 def test_listmatching():
-    testlist = List(range(5))
-    assert testlist[0,1] == (0,1,[2,3,4])
-    assert testlist[1,3] == (1,3,[0,2,4])
+    testlist = List([6,2,1,8,6])
+    assert testlist[0,1] == (6,2,[1,8,6])
+    assert testlist[1,3] == (2,8,[6,1,6])
 
 
 def test_import_hook():
@@ -29,3 +29,5 @@ def test_import_hook():
     import test_module
     assert test_module.test_func(1)(5)(3) == 9
     assert test_module.test_func(1,5,3) == 9
+    assert test_module.a[0,2] == (0,6,[2,8,7])
+    assert test_module.b[1,3,4] == (4,64,49,[0,36])

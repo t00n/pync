@@ -21,9 +21,6 @@ def curry(func):
     return wrapper
 
 class List(list):
-    def __init__(self, *args, **kwargs):
-        super(List, self).__init__(*args, **kwargs)
-
     def __getitem__(self, key):
         if isinstance(key, tuple):
             lst = [self[i] for i in key]
