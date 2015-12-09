@@ -1,3 +1,30 @@
+""" This file is heavily inspired by Pyrthon.
+    Original : https://github.com/tobgu/pyrthon/blob/master/pyrthon/_import_hook.py
+
+    Copyright (c) 2015 Tobias Gustafsson
+
+    Permission is hereby granted, free of charge, to any person
+    obtaining a copy of this software and associated documentation
+    files (the "Software"), to deal in the Software without
+    restriction, including without limitation the rights to use,
+    copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following
+    conditions:
+
+    The above copyright notice and this permission notice shall be
+    included in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+    EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+    OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+    NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+    HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+    WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+    OTHER DEALINGS IN THE SOFTWARE.
+"""
+
 import imp
 import os
 import types
@@ -18,17 +45,33 @@ def functionalize(src):
 
 class PyncImporter(object):
     def __init__(self):
-        self.modules = []
-
-    def register_modules(self, *args):
-        self.modules.extend(args)
+        self._match_expressions = []
 
     def register_importer(self):
         sys.meta_path.insert(0, self)
 
+    def module_matches(self, name):
+        for expr in self._match_expressions:
+            if callable(expr):
+                if expr(name):
+                    return True
+
+            else:
+                if expr.endswith('*') and name.startswith(expr[:-1]):
+                    return True
+
+                if expr == name:
+                    return True
+
+        return False
+
+    def add_matchers(self, *matchers):
+        self._match_expressions.extend(matchers)
+
     def find_module(self, name, path=None):
-        if name in self.modules:
+        if self.module_matches(name):
             return self
+
         return None
 
     def load_module(self, name):

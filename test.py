@@ -35,10 +35,9 @@ def test_listmatching():
     assert testlist[0,1] == (6,2,[1,8,6])
     assert testlist[1,3] == (2,8,[6,1,6])
 
-
 def test_import_hook():
     from _import_hook import importer
-    importer.register_modules('test_module')
+    importer.add_matchers('test_module')
     importer.register_importer()
     import test_module
     assert test_module.test_func(1)(5)(3) == 9
