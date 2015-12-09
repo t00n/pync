@@ -5,6 +5,10 @@ def test_curry():
     @curry
     def testfunc(x, y, z):
         return x + y + z
+    class testclass():
+        @curry
+        def testmethod(self, x,y,z):
+            return x+y+z
     assert testfunc(1, 1, 1) == 3
     assert testfunc(1,1)(1) == 3
     assert testfunc(1)(1,1) == 3
@@ -15,6 +19,16 @@ def test_curry():
         testfunc(1,1,1)(1)
     with pytest.raises(TypeError):
         testfunc(1,1)(1,1)
+    assert testclass().testmethod(1,1,2) == 4
+    assert testclass().testmethod(1,1)(2) == 4
+    assert testclass().testmethod(1)(1,2) == 4
+    assert testclass().testmethod(1)(1)(2) == 4
+    with pytest.raises(TypeError):
+        testclass().testmethod(1,1,1,1)
+    with pytest.raises(TypeError):
+        testclass().testmethod(1,1,1)(1)
+    with pytest.raises(TypeError):
+        testclass().testmethod(1,1)(1,1)
 
 def test_listmatching():
     testlist = List([6,2,1,8,6])
