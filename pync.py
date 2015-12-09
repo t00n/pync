@@ -1,14 +1,24 @@
 from functools import wraps, partial
 from inspect import signature
 
-def curry(func):
-    def f(*args, **kwargs):
-        newfunc = partial(func, *args, **kwargs)
-        if len(signature(newfunc).parameters) == 0:
-            return newfunc()
+class Function():
+    def __init__(self, function):
+        self.function = function
+        self.args = []
+        self.kwargs = {}
+
+    def __call__(self, *args, **kwargs):
+        self.args.extend(args)
+        self.kwargs.update(kwargs)
+        if len(self.args) + len(self.kwargs) >= len(signature(self.function).parameters):
+            return self.function(*self.args, **self.kwargs)
         else:
-            return newfunc
-    return f
+            return self
+
+def curry(func):
+    def wrapper(*args, **kwargs):
+        return Function(func)(*args, **kwargs)
+    return wrapper
 
 class MatchObject:
     def __init__(self, obj):
