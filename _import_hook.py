@@ -5,6 +5,13 @@ import sys
 from redbaron import RedBaron
 from pync import *
 
+def functionalize(src):
+    red = RedBaron(src)
+    red.insert(0, 'import pync')
+    for func in red.find_all('def'):
+        func.decorators.append('@pync.curry')
+    return red.dumps()
+
 class PyncImporter(object):
     def __init__(self):
         self.modules = []
@@ -50,11 +57,7 @@ class PyncImporter(object):
                 src = fd.read()
 
         module.__file__ = filename
-        red = RedBaron(src)
-        red.insert(0, 'import pync')
-        for func in red.find_all('def'):
-            func.decorators.append('@pync.curry')
-        inlined = red.dumps()
+        inlined = functionalize(src)
         code = compile(inlined, filename, 'exec')
         sys.modules[name] = module
         exec(code,  module.__dict__)
