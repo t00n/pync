@@ -20,21 +20,13 @@ def curry(func):
         return Function(func)(*args, **kwargs)
     return wrapper
 
-class MatchObject:
-    def __init__(self, obj):
-        self.obj = obj
+class List(list):
+    def __init__(self, *args, **kwargs):
+        super(List, self).__init__(*args, **kwargs)
 
     def __getitem__(self, key):
         if isinstance(key, tuple):
-            if isinstance(self.obj, list):
-                lst = [self.obj[i] for i in key]
-                lst.append([x for i, x in enumerate(self.obj) if i not in key])
-                return tuple(lst)
-        return obj.__getitem__[key]
-
-def listmatching(func):
-    def wrapper(*args, **kwargs):
-        newargs = map(MatchObject, args)
-        newkwargs = {key: MatchObject(val) for key, val in kwargs.items()}
-        return func(*newargs, **newkwargs)
-    return wrapper
+            lst = [self[i] for i in key]
+            lst.append([x for i, x in enumerate(self) if i not in key])
+            return tuple(lst)
+        return super(List, self).__getitem__(key)
