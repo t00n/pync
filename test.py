@@ -48,6 +48,11 @@ def test_patternmatching():
     assert [fibo(i) for i in range(5)] == [1,1,2,3,5]
     with pytest.raises(ValueError):
         fibo(-10)
+    @patternmatching
+    def a(n__eq=0):
+        return 0
+    with pytest.raises(ValueError):
+        a(1)
 
 def test_import_hook():
     from _import_hook import importer

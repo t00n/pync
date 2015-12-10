@@ -43,11 +43,11 @@ def patternmatching(func):
             sign = signature(function)
             ok, i = True, 0
             for k, param in sign.parameters.items():
-                print(args[i], param.default)
                 if param.default != _empty and param.name[-4:] in ["__eq", "__ne", "__lt", "__le", "__gt", "__ge"]:
                     if not eval('args[i].%s__(param.default)' % param.name[-4:] ):
                         ok = False
                 i+=1
             if ok:
                 return function(*args, **kwargs)
+        raise ValueError("No pattern for %s with args : " % func.__name__, args, kwargs)
     return wrapper
