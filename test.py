@@ -35,6 +35,18 @@ def test_listmatching():
     assert testlist[0,1] == (6,2,[1,8,6])
     assert testlist[1,3] == (2,8,[6,1,6])
 
+def test_patternmatching():
+    @patternmatching
+    def fibo(n__eq=0):
+        return 1
+    @patternmatching
+    def fibo(n__eq=1):
+        return 1
+    @patternmatching
+    def fibo(n):
+        return fibo(n-1) + fibo(n-2)
+    assert [fibo(i) for i in range(5)] == [1,1,2,3,5]
+
 def test_import_hook():
     from _import_hook import importer
     importer.add_matchers('test_module')
