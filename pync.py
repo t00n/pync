@@ -44,18 +44,8 @@ def patternmatching(func):
             ok, i = True, 0
             for k, param in sign.parameters.items():
                 print(args[i], param.default)
-                if param.default != _empty:
-                    if param.name.endswith("__eq") and args[i] != param.default:
-                        ok = False
-                    elif param.name.endswith("__ne") and args[i] == param.default:
-                        ok = False
-                    elif param.name.endswith("__lt") and args[i] >= param.default:
-                        ok = False
-                    elif param.name.endswith("__le") and args[i] > param.default:
-                        ok = False
-                    elif param.name.endswith("__gt") and args[i] <= param.default:
-                        ok = False
-                    elif param.name.endswith("__ge") and args[i] < param.default:
+                if param.default != _empty and param.name[-4:] in ["__eq", "__ne", "__lt", "__le", "__gt", "__ge"]:
+                    if not eval('args[i].%s__(param.default)' % param.name[-4:] ):
                         ok = False
                 i+=1
             if ok:
