@@ -42,10 +42,21 @@ def patternmatching(func):
         for function in functions[key]:
             sign = signature(function)
             ok, i = True, 0
-            for k, val in sign.parameters.items():
-                print(args[i], val.default)
-                if val.default != _empty and val.default != args[i]:
-                    ok = False
+            for k, param in sign.parameters.items():
+                print(args[i], param.default)
+                if param.default != _empty:
+                    if param.name.endswith("__eq") and args[i] != param.default:
+                        ok = False
+                    elif param.name.endswith("__ne") and args[i] == param.default:
+                        ok = False
+                    elif param.name.endswith("__lt") and args[i] >= param.default:
+                        ok = False
+                    elif param.name.endswith("__le") and args[i] > param.default:
+                        ok = False
+                    elif param.name.endswith("__gt") and args[i] <= param.default:
+                        ok = False
+                    elif param.name.endswith("__ge") and args[i] < param.default:
+                        ok = False
                 i+=1
             if ok:
                 return function(*args, **kwargs)

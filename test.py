@@ -37,15 +37,17 @@ def test_listmatching():
 
 def test_patternmatching():
     @patternmatching
-    def fibo(n__eq=0):
-        return 1
+    def fibo(n__lt=0):
+        raise ValueError("Can not compute fibonacci for negative values !")
     @patternmatching
-    def fibo(n__eq=1):
+    def fibo(n__lt=2):
         return 1
     @patternmatching
     def fibo(n):
         return fibo(n-1) + fibo(n-2)
     assert [fibo(i) for i in range(5)] == [1,1,2,3,5]
+    with pytest.raises(ValueError):
+        fibo(-10)
 
 def test_import_hook():
     from _import_hook import importer
