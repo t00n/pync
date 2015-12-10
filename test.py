@@ -53,6 +53,31 @@ def test_patternmatching():
         return 0
     with pytest.raises(ValueError):
         a(1)
+    @patternmatching
+    def test(a, b, c__lt=0):
+        return 0
+    @patternmatching
+    def test(a, b__eq=1, c__eq=2):
+        return 1
+    @patternmatching
+    def test(a, b__lt=1, c__eq=2):
+        return 2
+    @patternmatching
+    def test(a__le=1, b__gt=2, c__eq=3):
+        return 3
+    @patternmatching
+    def test(a, b, c):
+        return 10
+    assert test(1,1,-1) == 0
+    assert test(1,1,0) == 10
+    assert test(1,1,2) == 1
+    assert test(1,2,2) == 10
+    assert test(1,1,3) == 10
+    assert test(1,0,2) == 2
+    assert test(1,0,3) == 10
+    assert test(1,3,2) == 10
+    assert test(1,1,1) == 10
+    assert test(0,3,3) == 3
 
 def test_import_hook():
     from _import_hook import importer
