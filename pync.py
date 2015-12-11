@@ -32,6 +32,16 @@ class List(list):
 
 functions = {}
 
+def _patternmatching1(parameters, *args, **kwargs):
+    ok, i = True, 0
+    for param in parameters:
+        if param.default != _empty and param.name[-4:] in ["__eq", "__ne", "__lt", "__le", "__gt", "__ge"]:
+            if not eval('args[i].%s__(param.default)' % param.name[-4:] ):
+                ok = False
+        i+=1
+    return ok
+
+
 def patternmatching(func):
     key = func.__name__
     if key not in functions:
@@ -41,13 +51,7 @@ def patternmatching(func):
     def wrapper(*args, **kwargs):
         for function in functions[key]:
             sign = signature(function)
-            ok, i = True, 0
-            for k, param in sign.parameters.items():
-                if param.default != _empty and param.name[-4:] in ["__eq", "__ne", "__lt", "__le", "__gt", "__ge"]:
-                    if not eval('args[i].%s__(param.default)' % param.name[-4:] ):
-                        ok = False
-                i+=1
-            if ok:
+            if _patternmatching1(sign.parameters.values(), *args, **kwargs):
                 return function(*args, **kwargs)
         raise ValueError("No pattern for %s with args : " % func.__name__, args, kwargs)
     return wrapper
