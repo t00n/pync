@@ -1,6 +1,7 @@
 from functools import wraps, partial
 from inspect import signature, _empty
 from copy import copy
+from collections import Callable
 
 class Function():
     def __init__(self, function):
@@ -32,15 +33,16 @@ class List(list):
 
 functions = {}
 
-def _patternmatching1(parameters, *args, **kwargs):
+def _patternmatching(parameters, annotations, *args, **kwargs):
     ok, i = True, 0
-    for param in parameters:
+    for arg, param in parameters.items():
         if param.default != _empty and param.name[-4:] in ["__eq", "__ne", "__lt", "__le", "__gt", "__ge"]:
             if not eval('args[i].%s__(param.default)' % param.name[-4:] ):
                 ok = False
+        if arg in annotations and isinstance(annotations[arg], Callable) and not annotations[arg](args[i]):
+            ok = False
         i+=1
     return ok
-
 
 def patternmatching(func):
     key = func.__name__
@@ -51,7 +53,7 @@ def patternmatching(func):
     def wrapper(*args, **kwargs):
         for function in functions[key]:
             sign = signature(function)
-            if _patternmatching1(sign.parameters.values(), *args, **kwargs):
+            if _patternmatching(sign.parameters, function.__annotations__, *args, **kwargs):
                 return function(*args, **kwargs)
         raise ValueError("No pattern for %s with args : " % func.__name__, args, kwargs)
     return wrapper

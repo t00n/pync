@@ -79,6 +79,35 @@ def test_patternmatching():
     assert test(1,1,1) == 10
     assert test(0,3,3) == 3
 
+def test_patternmatching_annotations():
+    @patternmatching
+    def fibo2(n: lambda x: x < 0):
+        raise ValueError("Can not compute fibonacci for negative values !")
+    @patternmatching
+    def fibo2(n: lambda x: x < 2):
+        return 1
+    @patternmatching
+    def fibo2(n):
+        return fibo2(n-1) + fibo2(n-2)
+    assert [fibo2(i) for i in range(5)] == [1,1,2,3,5]
+    with pytest.raises(ValueError):
+        fibo2(-10)
+
+def test_patternmatching_BOTH():
+    @patternmatching
+    def fibo3(n: lambda x: x < 0):
+        raise ValueError("Can not compute fibonacci for negative values !")
+    @patternmatching
+    def fibo3(n__lt=2):
+        return 1
+    @patternmatching
+    def fibo3(n):
+        return fibo3(n-1) + fibo3(n-2)
+    assert [fibo3(i) for i in range(5)] == [1,1,2,3,5]
+    with pytest.raises(ValueError):
+        fibo3(-10)
+
+
 def test_import_hook():
     from _import_hook import importer
     importer.add_matchers('test_module')
