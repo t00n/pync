@@ -106,6 +106,18 @@ def test_patternmatching_BOTH():
     assert [fibo3(i) for i in range(5)] == [1,1,2,3,5]
     with pytest.raises(ValueError):
         fibo3(-10)
+    @patternmatching
+    def fibo4(n__lt=0):
+        raise ValueError("Can not compute fibonacci for negative values !")
+    @patternmatching
+    def fibo4(n: lambda x: x < 2):
+        return 1
+    @patternmatching
+    def fibo4(n):
+        return fibo4(n-1) + fibo4(n-2)
+    assert [fibo4(i) for i in range(5)] == [1,1,2,3,5]
+    with pytest.raises(ValueError):
+        fibo4(-10)
 
 
 def test_import_hook():
