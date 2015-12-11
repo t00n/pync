@@ -129,3 +129,16 @@ def test_import_hook():
     assert test_module.test_func(1,5,3) == 9
     assert test_module.a[0,2] == (0,6,[2,8,7])
     assert test_module.b[1,3,4] == (4,64,49,[0,36])
+
+@patternmatching
+def fibo(n__lt=0):
+    raise ValueError("Can not compute fibonacci for negative values !")
+@patternmatching
+def fibo(n__lt=2):
+    return 1
+@patternmatching
+def fibo(n):
+    return fibo(n-1) + fibo(n-2)
+assert [fibo(i) for i in range(5)] == [1,1,2,3,5]
+with pytest.raises(ValueError):
+    fibo(-10)

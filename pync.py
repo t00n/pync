@@ -34,13 +34,20 @@ class List(list):
 functions = {}
 
 def _patternmatching(sign, *args, **kwargs):
+    operators = ["__eq", "__ne", "__lt", "__le", "__gt", "__ge"]
     ok, i = True, 0
     for param in sign.parameters.values():
-        if param.default != _empty and param.name[-4:] in ["__eq", "__ne", "__lt", "__le", "__gt", "__ge"]:
+        if param.default != _empty and param.name[-4:] in operators:
             if not eval('args[i].%s__(param.default)' % param.name[-4:] ):
                 ok = False
             else:
-                param.replace()
+                arguments = sign.bind(*args, **kwargs).arguments
+                for arg in arguments.keys():
+                    if arg[-4:] in operators:
+                        arguments[arg[:-4]] = arguments[arg]
+                        del arguments[arg]
+                print(arguments)
+
         if param.annotation != _empty and isinstance(param.annotation, Callable) and not param.annotation(args[i]):
             ok = False
         i+=1
