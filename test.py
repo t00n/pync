@@ -31,7 +31,7 @@ def test_curry():
         testclass().testmethod(1,1)(1,1)
 
 def test_listmatching():
-    testlist = List([6,2,1,8,6])
+    testlist = list([6,2,1,8,6])
     assert testlist[0,1] == (6,2,[1,8,6])
     assert testlist[1,3] == (2,8,[6,1,6])
 

@@ -39,7 +39,7 @@ def functionalize(src):
         func.decorators.append('@pync.curry')
 
     for l in red.find_all('list') + red.find_all('list_comprehension'):
-        l.replace("pync.List(%s)" % l)
+        l.replace("pync.list(%s)" % l)
 
     return red.dumps()
 

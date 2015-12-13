@@ -8,6 +8,14 @@ class dict(dict):
         super(dict, self).__init__(*args, **kwargs)
         self.__dict__ = self
 
+class list(list):
+    def __getitem__(self, key):
+        if isinstance(key, tuple):
+            lst = [self[i] for i in key]
+            lst.append([x for i, x in enumerate(self) if i not in key])
+            return tuple(lst)
+        return super(list, self).__getitem__(key)
+
 class Function():
     def __init__(self, function):
         self.function = function
@@ -28,16 +36,6 @@ def curry(func):
         return Function(func)(*args, **kwargs)
     return wrapper
 
-class List(list):
-    def __getitem__(self, key):
-        if isinstance(key, tuple):
-            lst = [self[i] for i in key]
-            lst.append([x for i, x in enumerate(self) if i not in key])
-            return tuple(lst)
-        return super(List, self).__getitem__(key)
-
-functions = {}
-
 def _patternmatching(sign, *args, **kwargs):
     ok, i = True, 0
     for param in sign.parameters.values():
@@ -51,14 +49,15 @@ def _patternmatching(sign, *args, **kwargs):
         i+=1
     return ok
 
+fakeglobals = {}
 def patternmatching(func):
     key = func.__name__
-    if key not in functions:
-        functions[key] = []
-    functions[key].append(copy(func))
+    if key not in fakeglobals:
+        fakeglobals[key] = []
+    fakeglobals[key].append(copy(func))
     @wraps(func)
     def wrapper(*args, **kwargs):
-        for function in functions[key]:
+        for function in fakeglobals[key]:
             if _patternmatching(signature(function), *args, **kwargs):
                 return function(*args, **kwargs)
         raise ValueError("No pattern for %s with args : " % func.__name__, args, kwargs)
