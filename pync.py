@@ -3,6 +3,11 @@ from inspect import signature, _empty
 from copy import copy
 from collections import Callable
 
+class dict(dict):
+    def __init__(self, *args, **kwargs):
+        super(dict, self).__init__(*args, **kwargs)
+        self.__dict__ = self
+
 class Function():
     def __init__(self, function):
         self.function = function
